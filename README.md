@@ -1,2 +1,2 @@
-# vsarunhah.github.io
-Personal Website
+# My website
+Just learning more about html, css and the interwebs.
