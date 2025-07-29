@@ -1,83 +1,731 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Home - Varun Shah</title>
-    <meta name="keywords" content=" HTML, CSS, Bootstrap, Java, Developer, Purdue, University, Student, Github, C">
-    <meta name="twitter:description" content="A place for me (Varun Shah) to showcase some of the projects that I'm most proud of.">
-    <meta name="twitter:image" content="assets/img/Photo%20-%20Side%20profile.png">
-    <meta property="og:image" content="assets/img/avatars/avatar.jpg">
-    <meta property="og:type" content="website">
-    <meta name="description" content="This is just a website for me (Varun Shah) to display things that I've worked on. I'm currently a student in computer science and I love development. I think this is a good way for me to both learn about web development and showcase everything that I've learnt before.">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Varun Shah's Website">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="180x180" href="assets/img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/img/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="assets/img/android-chrome-512x512.png">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700">
-    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
-    <link rel="stylesheet" href="assets/css/Contact-Form-Clean.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varun Shah - Terminal Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #e8e8e8;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .terminal-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background: #1a1a1a;
+            padding: 10px 20px;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .control-close { background: #ff5f56; }
+        .control-minimize { background: #ffbd2e; }
+        .control-maximize { background: #27ca3f; }
+
+        .terminal-title {
+            color: #b0b0b0;
+            font-size: 14px;
+            margin-left: auto;
+        }
+
+        .terminal-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #0a0a0a;
+        }
+
+        .command-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .prompt {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .command-input {
+            background: transparent;
+            border: none;
+            color: #e8e8e8;
+            font-family: inherit;
+            font-size: 16px;
+            outline: none;
+            flex: 1;
+            caret-color: #00ff88;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            background: #00ff88;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .output {
+            margin: 16px 0;
+            padding: 16px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border-left: 4px solid #00ff88;
+        }
+
+        .error {
+            border-left-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .success {
+            border-left-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .welcome-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            text-align: center;
+            border: 1px solid #404040;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            color: #00ff88;
+            margin-bottom: 16px;
+        }
+
+        .quick-commands {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .quick-command-btn {
+            padding: 12px 16px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-radius: 8px;
+            color: #e8e8e8;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-command-btn:hover {
+            background: #00ff88;
+            color: #0a0a0a;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .command-history {
+            margin-bottom: 16px;
+        }
+
+        .history-item {
+            margin-bottom: 8px;
+        }
+
+        .command-text {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .output-text {
+            color: #e8e8e8;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .output {
+            margin: 16px 0;
+            padding: 16px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border-left: 4px solid #00ff88;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .file-item {
+            padding: 8px 12px;
+            background: #2d2d2d;
+            border-radius: 4px;
+            border: 1px solid #404040;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-item:hover {
+            background: #404040;
+            border-color: #00ff88;
+        }
+
+        .project-card {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #404040;
+        }
+
+        .project-title {
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .project-description {
+            color: #b0b0b0;
+            margin-bottom: 12px;
+        }
+
+        .project-link {
+            color: #0088ff;
+            text-decoration: none;
+        }
+
+        .project-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Improved text readability */
+        .output {
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .command-text {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Better spacing for lists */
+        .output ul, .output ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .output li {
+            margin: 4px 0;
+        }
+    </style>
 </head>
-
 <body>
-    <main class="page lanidng-page">
-        <section class="portfolio-block block-intro">
-            <div class="container">
-                <div class="avatar" style="background-image:url(&quot;assets/img/avatars/avatar.jpg&quot;);"></div>
-                <div class="about-me">
-                    <p>Hello! I am <strong>Varun Shah</strong>. I'm a computer science student at Purdue University. I love developing software and I'm really interested in ML and security but I love to learn and know more about everything.</p>
-                </div>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-controls">
+                <button class="control-btn control-close"></button>
+                <button class="control-btn control-minimize"></button>
+                <button class="control-btn control-maximize"></button>
             </div>
-        </section>
-        <section class="portfolio-block photography">
-            <div class="container">
-                <div class="row no-gutters">
-                    <div class="col-md-6 col-lg-4 item zoom-on-hover"><img class="img-fluid image" src="assets/img/projects/IMG_20190807_175354.jpg"></div>
-                    <div class="col-md-6 col-lg-4 item zoom-on-hover"><img class="img-fluid image" src="assets/img/projects/IMG_20190722_193722.jpg"></div>
-                    <div class="col-md-6 col-lg-4 item zoom-on-hover"><img class="img-fluid image" src="assets/img/projects/IMG_20180318_184720.jpg"></div>
-                </div>
-            </div>
-        </section>
-        <section class="portfolio-block call-to-action border-bottom">
-            <div class="container">
-                <div class="d-flex justify-content-center align-items-center content"></div>
-            </div>
-        </section>
-    </main>
-    <footer class="page-footer">
-        <div class="container">
-            <div class="links"><a href="#">About me</a><a href="contact.html">Contact me</a><a href="my_projects.html">Projects</a></div>
-            <div class="social-icons"><a href="https://www.linkedin.com/in/vsarunhah/"><i class="icon ion-social-linkedin-outline"></i></a><a href="https://github.com/vsarunhah/"><i class="icon ion-social-github-outline"></i></a><a href="https://www.instagram.com/vrruun/"><i class="icon ion-social-instagram-outline"></i></a></div>
+            <div class="terminal-title">varun@portfolio:~</div>
         </div>
-    </footer>
-    <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient">
-        <div class="container"><a class="navbar-brand logo" href="index.html">Varun Shah</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navbarNav"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse"
-                id="navbarNav">
-                <ul class="nav navbar-nav ml-auto">
-                    <li class="nav-item" role="presentation"><a class="nav-link active" href="index.html">Home</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="resume.html">Resume</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="my_projects.html">Projects</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="contact.html">Contact</a></li>
-                </ul>
+        
+        <div class="terminal-body" id="terminal-body">
+            <div id="terminal-output"></div>
+            <div class="command-line">
+                <span class="prompt">$ </span>
+                <input type="text" class="command-input" id="command-input" autocomplete="off" placeholder="Type a command...">
             </div>
         </div>
-    </nav>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/smart-forms.min.js"></script>
-    <script src="assets/js/bs-init.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
-    <script src="assets/js/theme.js"></script>
-</body>
+    </div>
 
+    <div class="welcome-overlay" id="welcome-overlay">
+        <div class="welcome-card">
+            <h2 class="welcome-title">Welcome to Varun's Terminal! 🖥️</h2>
+            <p style="color: #b0b0b0; margin-bottom: 24px;">
+                This is an interactive terminal where you can explore my portfolio.
+                Type 'help' to see all available commands.
+            </p>
+            <div class="quick-commands">
+                <button class="quick-command-btn" onclick="executeCommand('help')">Help</button>
+                <button class="quick-command-btn" onclick="executeCommand('about')">About</button>
+                <button class="quick-command-btn" onclick="executeCommand('projects')">Projects</button>
+                <button class="quick-command-btn" onclick="executeCommand('contact')">Contact</button>
+            </div>
+            <button class="quick-command-btn" onclick="hideWelcome()" style="margin-top: 16px;">Start Exploring</button>
+        </div>
+    </div>
+
+    <script>
+        // Terminal functionality
+        const terminalOutput = document.getElementById('terminal-output');
+        const commandInput = document.getElementById('command-input');
+        const welcomeOverlay = document.getElementById('welcome-overlay');
+
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // Check if this is the first visit
+        if (!localStorage.getItem('visited')) {
+            welcomeOverlay.classList.remove('hidden');
+            localStorage.setItem('visited', 'true');
+        } else {
+            welcomeOverlay.classList.add('hidden');
+            printWelcome();
+        }
+
+        function hideWelcome() {
+            welcomeOverlay.classList.add('hidden');
+            commandInput.focus();
+        }
+
+        function printWelcome() {
+            addOutput(`Welcome to Varun's Terminal! 🖥️
+
+Type 'help' to see available commands
+Type 'man' for detailed command information
+
+$ `, 'success');
+        }
+
+        function addOutput(content, type = 'output') {
+            const outputDiv = document.createElement('div');
+            outputDiv.className = `output ${type}`;
+            outputDiv.innerHTML = content;
+            terminalOutput.appendChild(outputDiv);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const terminalBody = document.getElementById('terminal-body');
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        function executeCommand(command) {
+            if (!command.trim()) return;
+
+            // Add to history
+            commandHistory.push(command);
+            historyIndex = commandHistory.length;
+
+            // Display command
+            addOutput(`<span class="command-text">$ ${command}</span>`, 'command-history');
+
+            // Process command
+            const args = command.trim().split(' ');
+            const cmd = args[0].toLowerCase();
+
+            switch (cmd) {
+                case 'help':
+                case 'h':
+                    showHelp();
+                    break;
+                case 'man':
+                    showManual();
+                    break;
+                case 'about':
+                case 'whoami':
+                    showAbout();
+                    break;
+                case 'ls':
+                case 'dir':
+                    showFiles();
+                    break;
+                case 'cat':
+                    if (args.length < 2) {
+                        addOutput('Usage: cat <filename>', 'error');
+                    } else {
+                        showFileContent(args[1]);
+                    }
+                    break;
+                case 'projects':
+                case 'proj':
+                    showProjects();
+                    break;
+                case 'contact':
+                    showContact();
+                    break;
+                case 'resume':
+                case 'cv':
+                    showResume();
+                    break;
+                case 'clear':
+                case 'cls':
+                    clearTerminal();
+                    break;
+                case 'history':
+                    showHistory();
+                    break;
+                case 'pwd':
+                    addOutput('/home/varun/portfolio', 'success');
+                    break;
+                case 'date':
+                    addOutput(new Date().toString(), 'success');
+                    break;
+                case 'echo':
+                    if (args.length > 1) {
+                        addOutput(args.slice(1).join(' '), 'success');
+                    }
+                    break;
+                default:
+                    addOutput(`Command not found: ${cmd}. Type 'help' for available commands.`, 'error');
+            }
+
+            // Clear input and show new prompt
+            commandInput.value = '';
+            addOutput('$ ', 'prompt');
+        }
+
+        function showHelp() {
+            addOutput(`Available commands:
+
+• help, h          - Show this help message
+• man              - Show detailed manual
+• about, whoami    - About Varun Shah
+• ls, dir          - List available files
+• cat <file>       - Display file contents
+• projects, proj   - Show projects
+• contact          - Contact information
+• resume, cv       - Resume/CV
+• clear, cls       - Clear terminal
+• history          - Show command history
+• pwd              - Show current directory
+• date             - Show current date/time
+• echo <text>      - Echo text`, 'success');
+        }
+
+        function showManual() {
+            addOutput(`MANUAL - Detailed command information
+
+COMMANDS:
+
+help, h
+  Shows a list of all available commands with brief descriptions.
+
+man
+  Shows this detailed manual with command descriptions and usage.
+
+about, whoami
+  Displays information about Varun Shah including background, skills, and interests.
+
+ls, dir
+  Lists all available "files" (sections) that can be viewed with cat command.
+
+cat <filename>
+  Displays the contents of a specific file. Available files:
+  - about.txt
+  - projects.txt
+  - contact.txt
+  - resume.txt
+
+projects, proj
+  Shows detailed information about Varun's projects with links to repositories.
+
+contact
+  Displays contact information including email, LinkedIn, and GitHub.
+
+resume, cv
+  Shows resume/CV information and download link.
+
+clear, cls
+  Clears the terminal output.
+
+history
+  Shows the command history for this session.
+
+pwd
+  Shows the current working directory.
+
+date
+  Shows the current date and time.
+
+echo <text>
+  Echoes the provided text back to the terminal.`, 'success');
+        }
+
+        function showAbout() {
+            addOutput(`ABOUT VARUN SHAH
+
+Name: Varun Shah
+Location: Santa Clara, CA
+Role: Software Development Engineer I/II at Amazon Web Services
+Education: Purdue University - Computer Science
+Interests: Software Development, ML, Security, Cloud Infrastructure
+
+Background:
+I'm a Software Development Engineer at Amazon Web Services with extensive 
+experience in Go, Java, Python, and cloud infrastructure. I specialize 
+in building scalable systems, fraud detection, and improving operational 
+efficiency through automation.
+
+Current Focus:
+• Fraud detection systems with 99.95% effectiveness
+• Cloud infrastructure and Kubernetes
+• API development and microservices
+• Security practices and distributed systems
+
+Skills:
+• Programming: Go, Java, Python, JavaScript, C++, C
+• Cloud & Infrastructure: AWS, CloudFormation, Kubernetes, Lambda
+• Web Development: React, Node.js, Express, MongoDB
+• Machine Learning: PyTorch, Neural Networks, NLP
+• Tools: Git, GitHub, Ghidra, IDA Pro, PostgreSQL
+
+I'm passionate about building robust, scalable solutions that solve 
+real-world problems. My experience spans from research in cryptography 
+to developing production systems at scale.`, 'success');
+        }
+
+        function showFiles() {
+            addOutput(`Available files:
+
+about.txt      - Information about Varun Shah
+projects.txt   - List of projects and repositories
+contact.txt    - Contact information and social links
+resume.txt     - Resume and CV information
+
+Use 'cat <filename>' to view file contents.`, 'success');
+        }
+
+        function showFileContent(filename) {
+            switch (filename.toLowerCase()) {
+                case 'about.txt':
+                    showAbout();
+                    break;
+                case 'projects.txt':
+                    showProjects();
+                    break;
+                case 'contact.txt':
+                    showContact();
+                    break;
+                case 'resume.txt':
+                    showResume();
+                    break;
+                default:
+                    addOutput(`File not found: ${filename}`, 'error');
+            }
+        }
+
+        function showProjects() {
+            addOutput(`PROJECTS
+
+Facial-Expression-Recognition
+  A Flask app that uses your video camera to identify what mood you're in.
+  Repository: https://github.com/vsarunhah/Facial-Expression-Recognition
+  Tech: Python, Flask, Jupyter Notebook, Computer Vision
+
+Terminal-Text-Editor
+  A terminal text editor built in C, inspired by kilo editor.
+  Repository: https://github.com/vsarunhah/Terminal-Text-Editor
+  Tech: C, Terminal UI
+
+Timezone-Chatbot
+  A simple chatbot that gives you the timezones of cities around the world.
+  Repository: https://github.com/vsarunhah/Timezone-Chatbot
+  Tech: Python, Chatbot, API Integration
+
+AlinaManagementApp
+  A comprehensive Java application for Alina to manage all their business activities.
+  Repository: https://github.com/vsarunhah/AlinaManagementApp
+  Tech: Java, Business Management
+
+MIDIFileParser
+  A MIDI File Parser with UI built in C.
+  Repository: https://github.com/vsarunhah/MIDIFileParser
+  Tech: C, MIDI Processing, GUI
+
+Personal Website (Terminal)
+  This interactive terminal website showcasing projects and skills.
+  Repository: https://github.com/vsarunhah/vsarunhah.github.io
+  Tech: HTML, CSS, JavaScript, Terminal UI
+
+Bondly (Current Project)
+  A website that allows you to stay connected with friends, without needing 
+  to schedule meetings around everyone.
+  Tech: Web Development, Social Networking
+
+GitHub Profile: https://github.com/vsarunhah`, 'success');
+        }
+
+        function showContact() {
+            addOutput(`CONTACT INFORMATION
+
+Email: [Your email here]
+LinkedIn: https://www.linkedin.com/in/vsarunhah/
+GitHub: https://github.com/vsarunhah/
+Instagram: https://www.instagram.com/vrruun/
+
+Feel free to reach out for collaborations, opportunities, or just to chat!`, 'success');
+        }
+
+        function showResume() {
+            addOutput(`RESUME/CV
+
+EDUCATION: Purdue University - Computer Science
+
+SKILLS: Go, Java, Python, JavaScript, C++, C | React, Node.js, AWS, Kubernetes | PyTorch, NLP | Git, PostgreSQL, MongoDB
+
+EXPERIENCE:
+
+Software Development Engineer I/II | Amazon Web Services | July 2023 - Present
+• Fraud detection: 99.95% decrease in fraudulent activity (Go/Java)
+• Hardware APIs: 17% reduction in HyperPod churn
+• Customer onboarding: 67% efficiency improvement
+• Service availability: 75% → 99.96% across regions
+• AWS Security Guardian: Distributed security practices
+• Inter-network calls: 28% customer adoption increase
+• Core systems: 100x scalability increase
+• 25+ Python scripts: 75% ticket resolution reduction
+
+Software Development Engineering Intern | Amazon Web Services | May 2022 - August 2022
+• Microservice: polling → event-driven architecture
+• API optimization: 300K/month reduction, $1.2M annual savings
+• SageMaker: 1000x throughput increase
+• Lambda optimization: Custom SQS/SNS event handling
+
+Software Engineer | DIAL Ventures | March 2022 - May 2023
+• VC database: 10,000+ firms, comprehensive data
+• CRM platform: SME tracking and relationship management
+• Search engine: engagement scores, themes, locations
+• 600K+ funding rounds scraped for market analysis
+• Full-stack: React, MongoDB, Python, Express, Node.js
+• Data delivery: 78% load time reduction
+
+Software Engineering Intern | MealMe | May 2021 - August 2021
+• Service selection: 40% increase, 25K+ restaurants
+• Search engine: 500% accuracy improvement
+• Zero-downtime algorithm for new services
+• Search efficiency: 5K+ results in <1 second
+• Homepage stability: 20x improvement, $100K+ sales
+• Sub-second loading times
+
+Undergraduate Research Assistant | Applied Cryptography Lab | May 2020 - May 2022
+• Co-authored paper: cryptographic primitives identification
+• ML/NLP neural networks for binary analysis
+• Tool migration: Python 2/C++ → Python 3/C++ 19
+• Reverse engineering: Ghidra, IDA Pro pattern analysis
+
+Development Team Lead | BoilerMake | March 2020 - May 2023
+• Website development: Golang, JS, PostgreSQL, Cloudfront, S3
+• Team management: 5 developers, task delegation
+• Check-in module: 500+ participants
+• Image optimization: 15% loading improvement
+
+Download: <a href="assets/Varun Shah Resume.pdf" target="_blank" style="color: #0088ff; text-decoration: none;">assets/Varun Shah Resume.pdf</a>`, 'success');
+        }
+
+        function clearTerminal() {
+            terminalOutput.innerHTML = '';
+        }
+
+        function showHistory() {
+            if (commandHistory.length === 0) {
+                addOutput('No commands in history.', 'output');
+                return;
+            }
+            
+            let historyText = 'Command History:\n';
+            commandHistory.forEach((cmd, index) => {
+                historyText += `${index + 1}: ${cmd}\n`;
+            });
+            addOutput(historyText, 'success');
+        }
+
+        // Event listeners
+        commandInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                executeCommand(this.value);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    this.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    this.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    this.value = '';
+                }
+            }
+        });
+
+        // Focus on input when page loads
+        window.addEventListener('load', function() {
+            commandInput.focus();
+        });
+
+        // Auto-focus on input after command execution
+        function focusInput() {
+            commandInput.focus();
+        }
+
+        // Override addOutput to auto-focus
+        const originalAddOutput = addOutput;
+        addOutput = function(content, type) {
+            originalAddOutput(content, type);
+            setTimeout(focusInput, 100);
+        };
+    </script>
+</body>
 </html>
